@@ -55,3 +55,17 @@ label {
     border: solid 1px rgba(0, 0, 0, 0.5);
     
 }
+.form-check {
+    margin-bottom: 15px;
+}
+.form-check-label {
+    font-size: 1.1rem;
+}
+.additional-info {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.red-text {
+    color: red;
+}

@@ -23,4 +23,10 @@ urlpatterns = [
     path('encargado/',views.gestion_encargados,name='gestion_encargado'),
     path('eliminar/<int:cliente_id>/', views.eliminar_cliente, name='eliminar_cliente'),
     path('validar_ingreso/', views.validar_ingreso, name='validar_ingreso'),
+    path('gestion_planes/', views.gestion_planes, name='gestion_planes'),
+    path('eliminar_plan/<int:plan_id>/', views.eliminar_plan, name='eliminar_plan'),
+    path('editar_plan/<int:plan_id>/', views.editar_plan, name='editar_plan'),
+    path('registro/', views.registro_usuario, name='registro'),
+
+
 ]

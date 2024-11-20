@@ -19,7 +19,6 @@ class Cliente(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido} - {self.membresia}"
 
-
 class Encargado(models.Model):
     # Nombre del encargado
     nombre = models.CharField(max_length=100)
@@ -41,3 +40,12 @@ class Encargado(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.usuario})"
+    
+
+class Plan(models.Model):
+    nombre = models.CharField(max_length=50)
+    precio = models.IntegerField()
+    duracion_dias = models.IntegerField()
+
+    def __str__(self):
+        return self.nombre

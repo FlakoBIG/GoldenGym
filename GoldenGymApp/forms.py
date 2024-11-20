@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente,Encargado
+from .models import Cliente,Encargado,Plan
 
 class ClienteForm(forms.ModelForm):
     membresia = forms.MultipleChoiceField(
@@ -39,3 +39,9 @@ class EncargadoForm(forms.ModelForm):
         correo = self.cleaned_data.get('correo')
         # Aquí puedes agregar validaciones adicionales para el correo
         return correo
+
+class PlanForm(forms.ModelForm):
+    class Meta:
+        model = Plan
+        fields = ['nombre', 'precio', 'duracion_dias']
+
