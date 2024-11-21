@@ -1,39 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Planes</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+{% extends 'GoldenGymApp/base.html' %}
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <img src="https://via.placeholder.com/30" alt="Logo" class="d-inline-block align-top">
-            GoldenGym
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="../encargado/">Encargados</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../../">Clientes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Planes</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
+{% block content %}
     <div class="container mt-5" id="ContainerGeneral">
         <div id="card-principal">
             <div class="card-header text-center">
@@ -43,11 +10,6 @@
                 <form method="POST" id="form-planes">
                     {% csrf_token %}
                     <div class="form-row">
-                        <!-- Campo ID visible pero no editable -->
-                        <div class="col">
-                            <label for="id_plan">ID:</label>
-                            <input type="text" id="id_plan" name="id" class="form-control" placeholder="ID del plan" readonly value="{{ form.id.value }}">
-                        </div>
                         <div class="col">
                             <label for="nombre_plan">Nombre del Plan:</label>
                             <input type="text" id="nombre_plan" name="nombre" class="form-control" placeholder="Nombre del plan" value="{{ form.nombre.value|default:'' }}">
@@ -59,21 +21,17 @@
                             <input type="number" id="precio_plan" name="precio" class="form-control" placeholder="Precio" value="{{ form.precio.value|default:'' }}">
                         </div>
                         <div class="col">
-                            <label for="duracion_plan">Duración (dias):</label>
-                            <input type="number" id="duracion_plan" name="duracion_dias" class="form-control" placeholder="Duración en dias" value="{{ form.duracion_dias.value|default:'' }}">
+                            <label for="duracion_plan">Duración (días):</label>
+                            <input type="number" id="duracion_plan" name="duracion_dias" class="form-control" placeholder="Duración en días" value="{{ form.duracion_dias.value|default:'' }}">
                         </div>
                     </div>
                     <div class="form-row mt-3">
                         <button type="submit" class="btn btn-success m-2">Agregar</button>
-                        <button type="submit" class="btn btn-primary m-2">Modificar</button>
-                        <button type="submit" class="btn btn-danger m-2">Eliminar</button>
                     </div>
                 </form>
-                
- 
             </div>
             
-            <!-- Tabla de planes -->
+            <!-- tabla plane -->
             <div class="card-body card mb-3">
                 <h5 class="card-title">Lista de Planes</h5>
                 <div class="form-row mb-3">
@@ -90,7 +48,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre del Plan</th>
-                            <th>Duración (dias)</th>
+                            <th>Duración (días)</th>
                             <th>Precio</th>
                             <th>Acciones</th>
                         </tr>
@@ -103,27 +61,84 @@
                             <td>{{ plan.duracion_dias }}</td>
                             <td>{{ plan.precio }}</td>
                             <td>
-                                <!-- Boton para editar plan -->
-                                <form method="post" action="{% url 'editar_plan' plan.id %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-warning btn-sm">Editar</button>
-                                </form>
-                                <!-- Boton para eliminar plan -->
+                                <!-- editar btn -->
+                                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal{{ plan.id }}">
+                                    Editar
+                                </button>
+
+                                <!-- eliminar btn -->
                                 <form method="post" action="{% url 'eliminar_plan' plan.id %}" style="display:inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este plan?');">Eliminar</button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ plan.id }}">Eliminar</button>
                                 </form>
                             </td>
                         </tr>
+
+                        <!-- Modalpa eliminar -->
+                        <div class="modal fade" id="editModal{{ plan.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ plan.id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel{{ plan.id }}">Editar Plan</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Formulario dentro del modal, precargado con los datos del plan -->
+                                        <form method="POST" action="{% url 'editar_plan' plan.id %}">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="nombre">Nombre del Plan</label>
+                                                <input type="text" class="form-control" id="nombre" name="nombre" value="{{ plan.nombre }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="precio">Precio</label>
+                                                <input type="number" class="form-control" id="precio" name="precio" value="{{ plan.precio }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="duracion_dias">Duración (días)</label>
+                                                <input type="number" class="form-control" id="duracion_dias" name="duracion_dias" value="{{ plan.duracion_dias }}" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-warning m-2">Modificar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal editarl-->
+                        <div class="modal fade" id="deleteModal{{ plan.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ plan.id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="deleteModalLabel{{ plan.id }}">Confirmar Eliminación</h5>
+                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Estás seguro de que deseas eliminar el plan <strong>{{ plan.nombre }}</strong>?</p>
+                                        <p>Esta acción no se puede deshacer.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <form method="post" action="{% url 'eliminar_plan' plan.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
